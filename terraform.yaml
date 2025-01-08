@@ -1,0 +1,29 @@
+name: "Terraform Apply Pipeline"
+
+on:
+  workflow_call:
+    inputs:
+      ENV:
+        type: string
+        required: true
+        description: 'Target environment for deployment'
+
+
+permissions:
+  id-token: write # This is required for aws oidc connection
+  contents: read # This is required for actions/checkout
+  pull-requests: write # This is required for gh bot to comment PR
+
+jobs:
+  tf-apply:
+    name: tf-apply
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.ENV }}
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
