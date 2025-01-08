@@ -27,3 +27,10 @@ jobs:
       - name: Print Env
         run: |
           echo ${{ inputs.VARS }}
+          echo '${{ inputs.VARS }}' > vars.json
+          jq -r 'to_entries[] | "\(.key)=\(.value)"' vars.json >> $GITHUB_ENV
+
+      - name: Verify Env Variables
+        run: |
+          echo "TF_VAR_role_name=$TF_VAR_role_name"
+          echo "TF_VAR_role_id=$TF_VAR_role_id"
