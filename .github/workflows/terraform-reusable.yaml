@@ -3,11 +3,9 @@ name: "Terraform Apply Pipeline"
 on:
   workflow_call:
     inputs:
-      ENV:
-        type: string
+      VARS:
         required: true
-        description: 'Target environment for deployment'
-
+        type: map
 
 permissions:
   id-token: write # This is required for aws oidc connection
@@ -18,7 +16,6 @@ jobs:
   tf-apply:
     name: tf-apply
     runs-on: ubuntu-latest
-    environment: ${{ inputs.ENV }}
 
     defaults:
       run:
@@ -27,3 +24,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Print Env
+        run: |
+          echo ${ inputs.VARS }
