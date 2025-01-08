@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       VARS:
-        type: object
+        type: string
 
 permissions:
   id-token: write # This is required for aws oidc connection
