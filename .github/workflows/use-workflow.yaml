@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+permission:
+  pull-request: write
+  id-token: write
+
 jobs:
   call-reusable-workflow:
     uses: ./.github/workflows/terraform-reusable.yaml
