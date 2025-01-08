@@ -9,4 +9,5 @@ jobs:
   call-reusable-workflow:
     uses: ./.github/workflows/terraform-reusable.yaml
     with:
-      VARS: '{"TF_VAR_role_name": "x", "TF_VAR_role_id": "333"}'
+      VARS:
+        '{"TF_VAR_role_name": "x", "TF_VAR_role_id": "333"}'
