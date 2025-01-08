@@ -5,7 +5,7 @@ on:
     branches:
       - main
 
-permission:
+permissions:
   pull-request: write
   id-token: write
 
