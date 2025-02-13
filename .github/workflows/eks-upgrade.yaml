@@ -48,6 +48,7 @@ jobs:
         working-directory: platform
         run: |
           sed -i 's/cluster_version[[:space:]]*=[[:space:]]*"1.30"/cluster_version = "1.31"/' terraform.tfvars
+          git pull
           git add terraform.tfvars
           git commit -m "Upgrade EKS version to 1.31"
           git push origin "$NEW_BRANCH"
