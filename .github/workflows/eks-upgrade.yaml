@@ -14,13 +14,6 @@ permissions:
   pull-requests: write
 
 jobs:
-  perform-pre-checks:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Print Input String
-        run: |
-          echo "check" 
-
   create-merge-request:
     runs-on: ubuntu-latest
     steps:
@@ -48,10 +41,27 @@ jobs:
         working-directory: platform
         run: |
           sed -i 's/cluster_version[[:space:]]*=[[:space:]]*"1.30"/cluster_version = "1.31"/' terraform.tfvars
-          git pull
+        
+          # Pull latest changes from main
+          git fetch origin
+          git checkout main
+          git pull origin main
+      
+          # Create or switch to feature branch
+          git checkout -B "$NEW_BRANCH"
+      
+          # Modify terraform.tfvars
+          sed -i 's/cluster_version[[:space:]]*=[[:space:]]*"1.30"/cluster_version = "1.31"/' terraform.tfvars
+      
+          # Stage and commit changes
           git add terraform.tfvars
           git commit -m "Upgrade EKS version to 1.31"
-          git push origin "$NEW_BRANCH"
+      
+          # Push the new branch and set upstream
+          git push -u origin "$NEW_BRANCH"
+      
+          # Push using token authentication
           git push https://x-access-token:${{ secrets.TOKEN }}@github.com/jaybh1987/workflow-templates.git "$NEW_BRANCH"
+      
+          # Create PR using GitHub CLI
           gh pr create --title "Upgrade EKS to 1.31" --body "Automated upgrade" --base main --head "$NEW_BRANCH"
-                    
