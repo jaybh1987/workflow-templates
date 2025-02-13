@@ -1,0 +1,49 @@
+name: EKS Upgrade
+
+on:
+  workflow_dispatch:
+    inputs:
+      eks_target_version:
+        description: "EKS Target Version"
+        required: true
+        type: string
+
+jobs:
+  perform-pre-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Input String
+        run: |
+          echo "check" 
+
+  create-merge-request:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main  # Ensure we start from the latest main branch
+          fetch-depth: 0  # Fetch full history to create a new branch
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create New Branch
+        run: |
+          NEW_BRANCH="eks-upgrade-${{ github.run_id }}"
+          git checkout -b "$NEW_BRANCH"
+
+      - name: Update EKS Version
+        run: |
+          sed -i 's/cluster_version[[:space:]]*=[[:space:]]*"1.30"/cluster_version = "1.31"/' terraform.tfvars
+          git add terraform.tfvars
+          git commit -m "Upgrade EKS version to 1.31"
+          git push origin "$NEW_BRANCH"
+
+      - name: Create Merge Request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create --base main --head "$NEW_BRANCH" --title "Upgrade EKS version to 1.31" --body "This PR upgrades the EKS version from 1.30 to 1.31."
