@@ -11,6 +11,7 @@ on:
 permissions:
   contents: write
   id-token: write # This is required for aws oidc connection
+  pull-requests: write
 
 jobs:
   perform-pre-checks:
