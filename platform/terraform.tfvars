@@ -1,3 +1,3 @@
 
 
-cluster_name = "1.30"
+cluster_version = "1.30"
