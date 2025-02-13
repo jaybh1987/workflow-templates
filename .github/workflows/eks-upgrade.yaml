@@ -32,10 +32,11 @@ jobs:
 
       - name: Create New Branch
         run: |
-          NEW_BRANCH="eks-upgrade-${{ github.run_id }}"
+          NEW_BRANCH="eks-upgrade-${{ github.event.inputs.eks_target_version }}"
           git checkout -b "$NEW_BRANCH"
 
       - name: Update EKS Version
+        working-directory: platform
         run: |
           sed -i 's/cluster_version[[:space:]]*=[[:space:]]*"1.30"/cluster_version = "1.31"/' terraform.tfvars
           git add terraform.tfvars
