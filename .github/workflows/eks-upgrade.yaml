@@ -51,6 +51,6 @@ jobs:
           git add terraform.tfvars
           git commit -m "Upgrade EKS version to 1.31"
           git push origin "$NEW_BRANCH"
-          git push https://x-access-token:${{ secrets.TOKEN }}@github.com/jaybh1987/workflow-templates.git eks-upgrade-1.31
-          gh pr create --title "Upgrade EKS to 1.31" --body "Automated upgrade" --base main --head eks-upgrade-1.31
+          git push https://x-access-token:${{ secrets.TOKEN }}@github.com/jaybh1987/workflow-templates.git "$NEW_BRANCH"
+          gh pr create --title "Upgrade EKS to 1.31" --body "Automated upgrade" --base main --head "$NEW_BRANCH"
                     
