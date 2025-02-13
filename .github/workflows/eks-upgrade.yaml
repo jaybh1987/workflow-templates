@@ -32,7 +32,9 @@ jobs:
 
       - name: Create New Branch
         run: |
-          NEW_BRANCH="eks-upgrade-${{ github.event.inputs.eks_target_version }}"
+          NEW_BRANCH="eks-upgrade-${{ github.event.inputs.eks_target_version }}"    
+          echo "NEW_BRANCH=${NEW_BRANCH}" >> $GITHUB_ENV
+        
           git checkout -b "$NEW_BRANCH"
 
       - name: Update EKS Version
