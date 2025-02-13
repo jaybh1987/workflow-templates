@@ -42,16 +42,15 @@ jobs:
         
           git checkout -b "$NEW_BRANCH"
 
-      - name: Update EKS Version
+      - name: Create Upgrade Merge Request
+        env:
+          TOKEN: ${{ secrets.TOKEN }}
         working-directory: platform
         run: |
           sed -i 's/cluster_version[[:space:]]*=[[:space:]]*"1.30"/cluster_version = "1.31"/' terraform.tfvars
           git add terraform.tfvars
           git commit -m "Upgrade EKS version to 1.31"
           git push origin "$NEW_BRANCH"
-
-      - name: Create Merge Request
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh pr create --base main --head "$NEW_BRANCH" --title "Upgrade EKS version to 1.31" --body "This PR upgrades the EKS version from 1.30 to 1.31."
+          git push https://x-access-token:${{ secrets.TOKEN }}@github.com/jaybh1987/workflow-templates.git eks-upgrade-1.31
+          gh pr create --title "Upgrade EKS to 1.31" --body "Automated upgrade" --base main --head eks-upgrade-1.31
+                    
