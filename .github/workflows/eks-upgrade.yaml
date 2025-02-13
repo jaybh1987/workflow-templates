@@ -56,10 +56,12 @@ jobs:
           # Stage and commit changes
           git add terraform.tfvars
           git commit -m "Upgrade EKS version to 1.31"
-      
+          
+          git pull origin main
           # Push the new branch and set upstream
           git push -u origin "$NEW_BRANCH"
-      
+          
+          git pull origin main
           # Push using token authentication
           git push https://x-access-token:${{ secrets.TOKEN }}@github.com/jaybh1987/workflow-templates.git "$NEW_BRANCH"
       
