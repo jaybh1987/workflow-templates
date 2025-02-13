@@ -37,7 +37,6 @@ jobs:
 
       - name: Create Upgrade Merge Request
         env:
-          TOKEN: ${{ secrets.TOKEN }}
           GH_TOKEN: ${{ github.token }}
         working-directory: platform
         run: |
@@ -59,10 +58,10 @@ jobs:
           git commit -m "Upgrade EKS version to 1.31"
           
            # Push changes with force-with-lease to avoid conflicts
-          git push --force-with-lease origin "$NEW_BRANCH"
+          git push origin "$NEW_BRANCH"
       
           # Push changes safely
-          git push --force-with-lease origin "$NEW_BRANCH"
+          git push origin "$NEW_BRANCH"
         
           # Create PR using GitHub CLI
-          gh pr create --title "Upgrade EKS to 1.31" --body "Automated upgrade" --base main --head "$NEW_BRANCH"
+          gh pr create --title "Upgrade EKS to 1.31" --body "Upgrading `EKS` from x to y" --base main --head "$NEW_BRANCH"
