@@ -1,0 +1,67 @@
+name: EKS Upgrade
+
+on:
+  workflow_dispatch:
+    inputs:
+      eks_target_version:
+        description: "EKS Target Version"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  id-token: write # This is required for aws oidc connection
+  pull-requests: write
+
+jobs:
+  create-merge-request:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main  # Ensure we start from the latest main branch
+          fetch-depth: 0  # Fetch full history to create a new branch
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create New Branch
+        run: |
+          NEW_BRANCH="eks-upgrade-${{ github.event.inputs.eks_target_version }}"    
+          echo "NEW_BRANCH=${NEW_BRANCH}" >> $GITHUB_ENV
+        
+          git checkout -b "$NEW_BRANCH"
+
+      - name: Create Upgrade Merge Request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        working-directory: platform
+        run: |
+          sed -i 's/cluster_version[[:space:]]*=[[:space:]]*"1.30"/cluster_version = "1.31"/' terraform.tfvars
+        
+          # Pull latest changes from main
+          git fetch origin
+          git checkout main
+          git pull origin main
+      
+          # Create or switch to feature branch
+          git checkout -B "$NEW_BRANCH"
+      
+          # Modify terraform.tfvars
+          sed -i 's/cluster_version[[:space:]]*=[[:space:]]*"1.30"/cluster_version = "1.31"/' terraform.tfvars
+      
+          # Stage and commit changes
+          git add terraform.tfvars
+          git commit -m "Upgrade EKS version to 1.31"
+          
+           # Push changes with force-with-lease to avoid conflicts
+          git push origin "$NEW_BRANCH"
+      
+          # Push changes safely
+          git push origin "$NEW_BRANCH"
+        
+          # Create PR using GitHub CLI
+          gh pr create --title "Upgrade EKS to 1.31" --body "Upgrading `EKS` from x to y" --base main --head "$NEW_BRANCH"
